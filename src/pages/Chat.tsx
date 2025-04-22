@@ -78,7 +78,7 @@ const Chat = () => {
         sender: 'Robert Chen',
         senderId: 'user-5',
         senderAvatar: 'https://randomuser.me/api/portraits/men/76.jpg',
-        content: 'I'll bring extra trash bags just in case.',
+        content: "I'll bring extra trash bags just in case.",
         timestamp: new Date(Date.now() - 900000).toISOString(),
       }
     ]);
