@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -6,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, Certificate, MapPin, Award, Users } from "lucide-react";
+import { Calendar, Award, MapPin, Users } from "lucide-react";
 import { Event, getVolunteerEvents, getAllEvents } from "@/services/eventService";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -18,7 +17,6 @@ const VolunteerDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check authentication and role
     if (!isAuthenticated) {
       navigate("/login");
       return;
@@ -29,15 +27,12 @@ const VolunteerDashboard = () => {
       return;
     }
     
-    // Load events data
     const fetchEvents = async () => {
       try {
-        // In a real app, we'd use the actual user ID
         const userEvents = await getVolunteerEvents(currentUser?.id || "user-1");
         setRegisteredEvents(userEvents);
         
         const allEvents = await getAllEvents();
-        // Filter out events the user is already registered for
         const userEventIds = userEvents.map(event => event.id);
         setAvailableEvents(allEvents.filter(event => !userEventIds.includes(event.id)));
         
@@ -60,7 +55,6 @@ const VolunteerDashboard = () => {
     });
   };
 
-  // Mock data for volunteer stats
   const volunteerStats = {
     totalHours: 24,
     eventsAttended: registeredEvents.length,
@@ -92,7 +86,6 @@ const VolunteerDashboard = () => {
       <h1 className="text-3xl font-bold mb-6">Volunteer Dashboard</h1>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        {/* User Profile Card */}
         <Card>
           <CardHeader className="pb-2">
             <CardTitle>Profile</CardTitle>
@@ -171,7 +164,6 @@ const VolunteerDashboard = () => {
           </CardContent>
         </Card>
         
-        {/* Stats Card */}
         <Card>
           <CardHeader className="pb-2">
             <CardTitle>Your Stats</CardTitle>
@@ -198,7 +190,6 @@ const VolunteerDashboard = () => {
           </CardContent>
         </Card>
         
-        {/* Certificates Card */}
         <Card>
           <CardHeader className="pb-2">
             <CardTitle>Certificates</CardTitle>
@@ -208,7 +199,7 @@ const VolunteerDashboard = () => {
             <ul className="space-y-2">
               {volunteerStats.certificates.map(cert => (
                 <li key={cert.id} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg flex items-center space-x-3">
-                  <Certificate className="h-5 w-5 text-volunteer" />
+                  <Award className="h-5 w-5 text-volunteer" />
                   <div className="flex-1">
                     <div className="font-medium">{cert.title}</div>
                     <div className="text-xs text-muted-foreground">{formatDate(cert.date)}</div>
@@ -223,7 +214,6 @@ const VolunteerDashboard = () => {
         </Card>
       </div>
       
-      {/* Events Sections */}
       <Tabs defaultValue="upcoming">
         <div className="flex justify-between items-center mb-4">
           <TabsList>
@@ -347,9 +337,7 @@ const VolunteerDashboard = () => {
         </TabsContent>
       </Tabs>
       
-      {/* Additional Cards Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-        {/* Suggested Friends */}
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">People You May Know</CardTitle>
@@ -384,7 +372,6 @@ const VolunteerDashboard = () => {
           </CardContent>
         </Card>
         
-        {/* Upcoming Reminders */}
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Event Reminders</CardTitle>
