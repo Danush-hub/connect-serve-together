@@ -11,6 +11,7 @@ import { VolunteerCertificates } from "@/components/volunteer/VolunteerCertifica
 import { EventsList } from "@/components/volunteer/EventsList";
 import { SuggestedFriends } from "@/components/volunteer/SuggestedFriends";
 import { EventReminders } from "@/components/volunteer/EventReminders";
+import { toast } from "@/components/ui/use-toast";
 
 const VolunteerDashboard = () => {
   const { currentUser, isAuthenticated, userRole } = useAuth();
@@ -18,6 +19,7 @@ const VolunteerDashboard = () => {
   const [registeredEvents, setRegisteredEvents] = useState<Event[]>([]);
   const [availableEvents, setAvailableEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -32,6 +34,7 @@ const VolunteerDashboard = () => {
     
     const fetchEvents = async () => {
       try {
+        console.log("Fetching events for volunteer:", currentUser?.id);
         const userEvents = await getVolunteerEvents(currentUser?.id || "user-1");
         setRegisteredEvents(userEvents);
         
@@ -42,12 +45,17 @@ const VolunteerDashboard = () => {
         setLoading(false);
       } catch (error) {
         console.error("Error fetching events:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load events. Please refresh the page.",
+          variant: "destructive"
+        });
         setLoading(false);
       }
     };
     
     fetchEvents();
-  }, [isAuthenticated, userRole, navigate, currentUser]);
+  }, [isAuthenticated, userRole, navigate, currentUser, refreshTrigger]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -58,19 +66,39 @@ const VolunteerDashboard = () => {
     });
   };
 
+  // This data would come from Supabase once integrated
   const volunteerStats = {
     totalHours: 24,
     eventsAttended: registeredEvents.length,
     rewardPoints: 240,
     certificates: [
-      { id: 'cert-1', title: 'Environmental Stewardship', date: '2025-03-15' },
-      { id: 'cert-2', title: 'Community Service Excellence', date: '2025-02-10' }
+      { 
+        id: 'cert-1', 
+        title: 'Environmental Stewardship', 
+        date: '2025-03-15',
+        downloadUrl: '/certificates/env-stewardship.pdf' 
+      },
+      { 
+        id: 'cert-2', 
+        title: 'Community Service Excellence', 
+        date: '2025-02-10',
+        downloadUrl: '/certificates/community-service.pdf'
+      }
     ],
     suggestedFriends: [
       { id: 'user-2', name: 'Jane Smith', image: 'https://randomuser.me/api/portraits/women/33.jpg' },
       { id: 'user-3', name: 'Carlos Mendez', image: 'https://randomuser.me/api/portraits/men/45.jpg' },
       { id: 'user-4', name: 'Sarah Johnson', image: 'https://randomuser.me/api/portraits/women/22.jpg' }
     ]
+  };
+
+  const handleRefresh = () => {
+    setLoading(true);
+    setRefreshTrigger(prev => prev + 1);
+    toast({
+      title: "Refreshing",
+      description: "Updating your volunteer dashboard..."
+    });
   };
 
   if (loading) {
@@ -86,7 +114,12 @@ const VolunteerDashboard = () => {
 
   return (
     <div className="container py-8">
-      <h1 className="text-3xl font-bold mb-6">Volunteer Dashboard</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Volunteer Dashboard</h1>
+        <Button variant="outline" size="sm" onClick={handleRefresh}>
+          Refresh Data
+        </Button>
+      </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <VolunteerProfile
