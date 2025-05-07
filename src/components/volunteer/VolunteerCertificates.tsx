@@ -51,34 +51,43 @@ export const VolunteerCertificates = ({ certificates, formatDate }: VolunteerCer
       </CardHeader>
       <CardContent>
         <ul className="space-y-2">
-          {certificates.map(cert => (
-            <li key={cert.id} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg flex items-center space-x-3">
-              <Award className="h-5 w-5 text-volunteer" />
-              <div className="flex-1">
-                <div className="font-medium">{cert.title}</div>
-                <div className="text-xs text-muted-foreground">{formatDate(cert.date)}</div>
-              </div>
-              {cert.downloadUrl && (
-                <Button 
-                  size="sm" 
-                  variant="ghost" 
-                  className="px-2" 
-                  onClick={() => handleDownload(cert.id, cert.title)}
-                  disabled={downloading === cert.id}
-                >
-                  {downloading === cert.id ? (
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                  ) : (
-                    <Download className="h-4 w-4" />
+          {certificates.length > 0 ? (
+            <>
+              {certificates.map(cert => (
+                <li key={cert.id} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg flex items-center space-x-3">
+                  <Award className="h-5 w-5 text-volunteer" />
+                  <div className="flex-1">
+                    <div className="font-medium">{cert.title}</div>
+                    <div className="text-xs text-muted-foreground">{formatDate(cert.date)}</div>
+                  </div>
+                  {cert.downloadUrl && (
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="px-2" 
+                      onClick={() => handleDownload(cert.id, cert.title)}
+                      disabled={downloading === cert.id}
+                    >
+                      {downloading === cert.id ? (
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                      ) : (
+                        <Download className="h-4 w-4" />
+                      )}
+                      <span className="sr-only">Download</span>
+                    </Button>
                   )}
-                  <span className="sr-only">Download</span>
-                </Button>
-              )}
+                </li>
+              ))}
+              <li className="text-center pt-1">
+                <Button variant="link" className="text-volunteer">View All Certificates</Button>
+              </li>
+            </>
+          ) : (
+            <li className="text-center py-6">
+              <div className="text-4xl mb-2">🏆</div>
+              <p className="text-muted-foreground">No certificates earned yet</p>
             </li>
-          ))}
-          <li className="text-center pt-1">
-            <Button variant="link" className="text-volunteer">View All Certificates</Button>
-          </li>
+          )}
         </ul>
       </CardContent>
     </Card>
